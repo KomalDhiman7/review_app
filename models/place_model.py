@@ -6,17 +6,16 @@ def get_place_by_name_and_address(name, address):
     Used to check if place already exists.
     """
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor()
 
     cursor.execute(
-        "SELECT * FROM places WHERE name = %s AND address = %s",
+        "SELECT * FROM places WHERE name = ? AND address = ?",
         (name, address)
     )
-    place = cursor.fetchone()
-
-    cursor.close()
+    row = cursor.fetchone()
     db.close()
-    return place
+
+    return dict(row) if row else None
 
 
 def create_place(name, address):
@@ -28,13 +27,15 @@ def create_place(name, address):
     cursor = db.cursor()
 
     cursor.execute(
-        "INSERT INTO places (name, address) VALUES (%s, %s)",
+        "INSERT INTO places (name, address) VALUES (?, ?)",
         (name, address)
     )
 
     db.commit()
-    cursor.close()
+    place_id = cursor.lastrowid
     db.close()
+
+    return place_id
 
 
 def get_place_by_id(place_id):
@@ -43,14 +44,13 @@ def get_place_by_id(place_id):
     Used when showing place details.
     """
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor()
 
     cursor.execute(
-        "SELECT * FROM places WHERE id = %s",
+        "SELECT * FROM places WHERE id = ?",
         (place_id,)
     )
-    place = cursor.fetchone()
-
-    cursor.close()
+    row = cursor.fetchone()
     db.close()
-    return place
+
+    return dict(row) if row else None

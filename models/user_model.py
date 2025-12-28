@@ -8,13 +8,13 @@ def create_user(name, phone, token):
     cursor = db.cursor()
 
     cursor.execute(
-        "INSERT INTO users (name, phone, auth_token) VALUES (%s, %s, %s)",
+        "INSERT INTO users (name, phone, auth_token) VALUES (?, ?, ?)",
         (name, phone, token)
     )
 
     db.commit()
-    cursor.close()
     db.close()
+
 
 def get_user_by_phone(phone):
     """
@@ -22,32 +22,33 @@ def get_user_by_phone(phone):
     Used to check uniqueness.
     """
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor()
 
     cursor.execute(
-        "SELECT * FROM users WHERE phone = %s",
+        "SELECT * FROM users WHERE phone = ?",
         (phone,)
     )
-    user = cursor.fetchone()
 
-    cursor.close()
+    row = cursor.fetchone()
     db.close()
-    return user
+
+    return dict(row) if row else None
+
 
 def get_user_by_token(token):
     """
     Fetches user using auth token.
-    Used for authentication middleware.
+    Used for authentication.
     """
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor()
 
     cursor.execute(
-        "SELECT * FROM users WHERE auth_token = %s",
+        "SELECT * FROM users WHERE auth_token = ?",
         (token,)
     )
-    user = cursor.fetchone()
 
-    cursor.close()
+    row = cursor.fetchone()
     db.close()
-    return user
+
+    return dict(row) if row else None

@@ -2,12 +2,17 @@ from flask import Flask, request, jsonify
 from routes.auth_routes import auth_bp
 from routes.review_routes import review_bp
 from models.user_model import get_user_by_token
+from routes.search_routes import search_bp
+from routes.place_details_routes import place_details_bp
+
 
 app = Flask(__name__)
 
 # Register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(review_bp)
+app.register_blueprint(search_bp)
+app.register_blueprint(place_details_bp)
 
 def authenticate():
     """
